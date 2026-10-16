@@ -5,3 +5,11 @@ packages:
 allowBuilds:
   esbuild: true
   msw: false
+
+permissions:
+  "@tanstack/router-plugin":
+    skills: true
+
+skills:
+  dirs:
+    - .agents/skills
