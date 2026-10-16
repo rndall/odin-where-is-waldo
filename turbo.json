@@ -1,9 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": ["DATABASE_URL"], 
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^contract:emit"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
@@ -14,11 +15,23 @@
       "dependsOn": ["^format"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["^typecheck", "^contract:emit"]
     },
     "dev": {
+      "dependsOn": ["^contract:emit"],
       "cache": false,
       "persistent": true
-    }
+    },
+    "contract:emit": { 
+      "inputs": ["src/prisma/contract.prisma", "prisma.config.ts"], 
+      "outputs": ["src/prisma/contract.json", "src/prisma/contract.d.ts"] 
+    }, 
+    "migration:plan": { 
+      "dependsOn": ["contract:emit"], 
+      "cache": false
+    }, 
+    "db:migrate": { 
+      "cache": false
+    } 
   }
 }

@@ -5,9 +5,15 @@ packages:
 allowBuilds:
   esbuild: true
   msw: false
+  msgpackr-extract: true
+  workerd: true
 
 permissions:
+  "@prisma/orm-postgres":
+    skills: true
   "@tanstack/router-plugin":
+    skills: true
+  prisma:
     skills: true
 
 skills:

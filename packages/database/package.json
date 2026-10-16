@@ -1,0 +1,33 @@
+{
+  "name": "@workspace/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "contract:emit": "prisma contract emit",
+    "migration:plan": "prisma migration plan",
+    "migration:status": "prisma migration status",
+    "db:migrate": "prisma db migrate --advance-ref db",
+    "db:verify": "prisma db verify",
+    "seed": "tsx src/seed.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/orm-postgres": "8.0.0-rc.18",
+    "dotenv": "^18.0.8"
+  },
+  "devDependencies": {
+    "@prisma/cli-engine": "0.7.0",
+    "@types/node": "^26.6.5",
+    "prisma": "8.0.0-rc.22",
+    "tsx": "^4.23.15"
+  }
+}
