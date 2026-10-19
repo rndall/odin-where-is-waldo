@@ -1,21 +1,27 @@
 // use prisma-8
-model User {
-  id        Int                        @id @default(autoincrement())
-  email     String                     @unique
-  username  String?
-  name      String?
-  bio       String?
-  posts     Post[]
-  createdAt TimestamptzString          @default(now())
-  updatedAt temporal.updatedAtString()
+model Level {
+  id        Int      @id @default(autoincrement())
+  number    Int      @unique
+  imagePath String
+  targets   Target[]
 }
 
-model Post {
-  id        Int                        @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User                       @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt TimestamptzString          @default(now())
-  updatedAt temporal.updatedAtString()
+model Target {
+  id          Int       @id @default(autoincrement())
+  x           Float
+  y           Float
+
+  level       Level     @relation(fields: [levelId], references: [id])
+  levelId     Int
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int
+
+  @@unique([levelId, characterId])
+}
+
+model Character {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  imagePath String
+  targets   Target[]
 }

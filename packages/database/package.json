@@ -14,6 +14,7 @@
     "db:migrate": "prisma db migrate --advance-ref db",
     "db:verify": "prisma db verify",
     "seed": "tsx src/seed.ts",
+    "format": "prettier --write \"**/*.ts\" \"!**/.*/**\"",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],

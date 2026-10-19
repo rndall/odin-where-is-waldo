@@ -1,0 +1,424 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.Character",
+    "label": "Create table \"Character\"",
+    "summary": "Creates table \"Character\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Character"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Character\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Character\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Character\"",
+        "sql": "CREATE TABLE \"public\".\"Character\" (\n  \"id\" SERIAL NOT NULL,\n  \"imagePath\" text NOT NULL,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Character\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Character\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Level",
+    "label": "Create table \"Level\"",
+    "summary": "Creates table \"Level\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Level"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Level\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Level\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Level\"",
+        "sql": "CREATE TABLE \"public\".\"Level\" (\n  \"id\" SERIAL NOT NULL,\n  \"imagePath\" text NOT NULL,\n  \"number\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Level\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Level\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Target",
+    "label": "Create table \"Target\"",
+    "summary": "Creates table \"Target\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Target\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Target\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Target\"",
+        "sql": "CREATE TABLE \"public\".\"Target\" (\n  \"characterId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"levelId\" int4 NOT NULL,\n  \"x\" float8 NOT NULL,\n  \"y\" float8 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Target\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Target\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Character.Character_name_key",
+    "label": "Add unique constraint on \"Character\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Character_name_key",
+        "table": "Character"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Character_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Character_name_key",
+          "public",
+          "\"public\".\"Character\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Character_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Character\" ADD CONSTRAINT \"Character_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Character_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Character_name_key",
+          "public",
+          "\"public\".\"Character\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Level.Level_number_key",
+    "label": "Add unique constraint on \"Level\" (number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Level_number_key",
+        "table": "Level"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Level_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Level_number_key",
+          "public",
+          "\"public\".\"Level\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Level_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"Level\" ADD CONSTRAINT \"Level_number_key\" UNIQUE (\"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Level_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Level_number_key",
+          "public",
+          "\"public\".\"Level\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Target.Target_levelId_characterId_key",
+    "label": "Add unique constraint on \"Target\" (levelId, characterId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Target_levelId_characterId_key",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Target_levelId_characterId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_levelId_characterId_key",
+          "public",
+          "\"public\".\"Target\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Target_levelId_characterId_key\"",
+        "sql": "ALTER TABLE \"public\".\"Target\" ADD CONSTRAINT \"Target_levelId_characterId_key\" UNIQUE (\"levelId\", \"characterId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Target_levelId_characterId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_levelId_characterId_key",
+          "public",
+          "\"public\".\"Target\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Target.Target_characterId_idx_2423fe9d",
+    "label": "Create index \"Target_characterId_idx_2423fe9d\" on \"Target\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Target_characterId_idx_2423fe9d",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Target_characterId_idx_2423fe9d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Target_characterId_idx_2423fe9d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Target_characterId_idx_2423fe9d\"",
+        "sql": "CREATE INDEX \"Target_characterId_idx_2423fe9d\" ON \"public\".\"Target\" (\"characterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Target_characterId_idx_2423fe9d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Target_characterId_idx_2423fe9d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Target.Target_levelId_idx_622a0732",
+    "label": "Create index \"Target_levelId_idx_622a0732\" on \"Target\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Target_levelId_idx_622a0732",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Target_levelId_idx_622a0732\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Target_levelId_idx_622a0732\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Target_levelId_idx_622a0732\"",
+        "sql": "CREATE INDEX \"Target_levelId_idx_622a0732\" ON \"public\".\"Target\" (\"levelId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Target_levelId_idx_622a0732\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Target_levelId_idx_622a0732\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Target.Target_levelId_fkey",
+    "label": "Add foreign key \"Target_levelId_fkey\" on \"Target\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Target_levelId_fkey",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Target_levelId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_levelId_fkey",
+          "public",
+          "\"public\".\"Target\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Target_levelId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Target\"\nADD CONSTRAINT \"Target_levelId_fkey\"\nFOREIGN KEY (\"levelId\")\nREFERENCES \"public\".\"Level\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Target_levelId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_levelId_fkey",
+          "public",
+          "\"public\".\"Target\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Target.Target_characterId_fkey",
+    "label": "Add foreign key \"Target_characterId_fkey\" on \"Target\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Target_characterId_fkey",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Target_characterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_characterId_fkey",
+          "public",
+          "\"public\".\"Target\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Target_characterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Target\"\nADD CONSTRAINT \"Target_characterId_fkey\"\nFOREIGN KEY (\"characterId\")\nREFERENCES \"public\".\"Character\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Target_characterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_characterId_fkey",
+          "public",
+          "\"public\".\"Target\""
+        ]
+      }
+    ]
+  }
+]
