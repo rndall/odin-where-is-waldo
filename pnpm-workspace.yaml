@@ -7,8 +7,9 @@ allowBuilds:
   msw: false
   msgpackr-extract: true
   workerd: true
-
 permissions:
+  '@parcel/watcher':
+    build: true
   "@prisma/orm-postgres":
     skills: true
   "@tanstack/router-plugin":
@@ -16,6 +17,8 @@ permissions:
   prisma:
     skills: true
 
+  unrs-resolver:
+    build: true
 skills:
   dirs:
     - .agents/skills
