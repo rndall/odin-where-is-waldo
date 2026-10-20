@@ -1,3 +1,9 @@
+export const LEVEL_CHARACTERS = [
+  { id: 1, name: "odlaw", imagePath: "/images/icons/odlaw.png" },
+  { id: 2, name: "waldo", imagePath: "/images/icons/waldo.png" },
+  { id: 3, name: "wizard", imagePath: "/images/icons/wizard.webp" },
+]
+
 export const LEVEL_TARGETS = [
   {
     levelId: 1,
