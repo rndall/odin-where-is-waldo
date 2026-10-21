@@ -3,12 +3,11 @@ import express, {
   type NextFunction,
   type Request,
   type Response,
-  Router,
 } from "express"
 import createError from "http-errors"
 import { join } from "node:path"
 
-import { levelsRouter } from "./routes/levels"
+import { handler } from "./orpc"
 
 const app: Express = express()
 
@@ -17,10 +16,18 @@ app.use(
   express.static(join(import.meta.dirname, "../public/images"))
 )
 
-const apiRouter = Router()
-apiRouter.use("/levels", levelsRouter)
+app.use("/rpc{/*path}", async (req, res, next) => {
+  const { matched } = await handler.handle(req, res, {
+    prefix: "/rpc",
+    context: {},
+  })
 
-app.use("/api", apiRouter)
+  if (matched) {
+    return
+  }
+
+  next()
+})
 
 app.use((_req, _res, next) => {
   next(createError(404))

@@ -17,7 +17,7 @@ export default defineConfig([
     ],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: { allowDefaultProject: ["jest.config.ts"] },
       },
     },
   },
