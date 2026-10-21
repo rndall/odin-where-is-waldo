@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { Request, Response } from "express"
 import { z, type ZodType } from "zod"
 
 export const makeValidatedEndpoint =
   <TParams, TQuery>(
     { params, query }: { params?: ZodType<TParams>; query?: ZodType<TQuery> },
-    cb: (req: Request<TParams, any, any, TQuery>, res: Response) => void
+    cb: (
+      req: Request<TParams, any, any, TQuery>,
+      res: Response
+    ) => Promise<void> | void
   ) =>
   (req: Request, res: Response) => {
     const paramsResult = params?.safeParse(req.params)
@@ -30,5 +35,6 @@ export const makeValidatedEndpoint =
       })
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return cb(req as any, res)
   }

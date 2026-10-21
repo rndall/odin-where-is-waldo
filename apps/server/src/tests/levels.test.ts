@@ -47,7 +47,7 @@ describe("Levels route", () => {
     const res = await request(app).get(`/api/levels/${level.number}`)
 
     expect(res.headers["content-type"]).toMatch(/json/)
-    expect(res.status).toEqual(200)
+    expect(res.status).toBe(200)
     expect(res.body).toStrictEqual({
       level: {
         id: 1,
@@ -93,7 +93,7 @@ describe("Levels route", () => {
     const res = await request(app).get("/api/levels/1")
 
     expect(res.headers["content-type"]).toMatch(/json/)
-    expect(res.status).toEqual(404)
+    expect(res.status).toBe(404)
     expect(res.body).toStrictEqual({ message: "Level not found" })
   })
 
@@ -104,12 +104,17 @@ describe("Levels route", () => {
         const res = await request(app).get(`/api/levels/${param}`)
 
         expect(res.headers["content-type"]).toMatch(/json/)
-        expect(res.status).toEqual(400)
-        expect(res.body.message).toBe("Validation failed")
-        expect(res.body.errors.params.fieldErrors).toHaveProperty(
-          "levelNumber",
-          [expect.any(String)]
-        )
+        expect(res.status).toBe(400)
+        expect(res.body).toMatchObject({
+          message: "Validation failed",
+          errors: {
+            params: {
+              fieldErrors: {
+                levelNumber: [expect.any(String)],
+              },
+            },
+          },
+        })
       }
     )
   })
