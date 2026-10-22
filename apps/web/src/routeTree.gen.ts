@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LevelNumberRouteImport } from './routes/$levelNumber'
+import { Route as LevelsLevelNumberRouteImport } from './routes/levels/$levelNumber'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LevelNumberRoute = LevelNumberRouteImport.update({
-  id: '/$levelNumber',
-  path: '/$levelNumber',
+const LevelsLevelNumberRoute = LevelsLevelNumberRouteImport.update({
+  id: '/levels/$levelNumber',
+  path: '/levels/$levelNumber',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$levelNumber': typeof LevelNumberRoute
+  '/levels/$levelNumber': typeof LevelsLevelNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$levelNumber': typeof LevelNumberRoute
+  '/levels/$levelNumber': typeof LevelsLevelNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$levelNumber': typeof LevelNumberRoute
+  '/levels/$levelNumber': typeof LevelsLevelNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$levelNumber'
+  fullPaths: '/' | '/levels/$levelNumber'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$levelNumber'
-  id: '__root__' | '/' | '/$levelNumber'
+  to: '/' | '/levels/$levelNumber'
+  id: '__root__' | '/' | '/levels/$levelNumber'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LevelNumberRoute: typeof LevelNumberRoute
+  LevelsLevelNumberRoute: typeof LevelsLevelNumberRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$levelNumber': {
-      id: '/$levelNumber'
-      path: '/$levelNumber'
-      fullPath: '/$levelNumber'
-      preLoaderRoute: typeof LevelNumberRouteImport
+    '/levels/$levelNumber': {
+      id: '/levels/$levelNumber'
+      path: '/levels/$levelNumber'
+      fullPath: '/levels/$levelNumber'
+      preLoaderRoute: typeof LevelsLevelNumberRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LevelNumberRoute: LevelNumberRoute,
+  LevelsLevelNumberRoute: LevelsLevelNumberRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

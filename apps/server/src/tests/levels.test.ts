@@ -49,43 +49,41 @@ describe("Levels route", () => {
     expect(res.headers["content-type"]).toMatch(/json/)
     expect(res.status).toBe(200)
     expect(res.body).toStrictEqual({
-      level: {
-        id: 1,
-        imagePath: "/images/levels/level1-scene.webp",
-        number: 1,
-        targets: [
-          {
-            id: 1,
-            x: 53.02,
-            y: 50.39,
-            character: {
-              id: 2,
-              imagePath: "/images/icons/waldo.png",
-              name: "waldo",
-            },
-          },
-          {
+      id: 1,
+      imagePath: "/images/levels/level1-scene.webp",
+      number: 1,
+      targets: [
+        {
+          id: 1,
+          x: 53.02,
+          y: 50.39,
+          character: {
             id: 2,
-            x: 24.41,
-            y: 50.65,
-            character: {
-              id: 1,
-              imagePath: "/images/icons/odlaw.png",
-              name: "odlaw",
-            },
+            imagePath: "/images/icons/waldo.png",
+            name: "waldo",
           },
-          {
+        },
+        {
+          id: 2,
+          x: 24.41,
+          y: 50.65,
+          character: {
+            id: 1,
+            imagePath: "/images/icons/odlaw.png",
+            name: "odlaw",
+          },
+        },
+        {
+          id: 3,
+          x: 62.59,
+          y: 50.13,
+          character: {
             id: 3,
-            x: 62.59,
-            y: 50.13,
-            character: {
-              id: 3,
-              imagePath: "/images/icons/wizard.webp",
-              name: "wizard",
-            },
+            imagePath: "/images/icons/wizard.webp",
+            name: "wizard",
           },
-        ],
-      },
+        },
+      ],
     })
   })
 
