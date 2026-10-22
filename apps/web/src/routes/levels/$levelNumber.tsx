@@ -22,15 +22,13 @@ function RouteComponent() {
   const context = Route.useRouteContext()
   const { data } = useSuspenseQuery(context.levelQueryOptions)
 
-  const characters = data.targets.map((target) => target.character)
-
   return (
     <div>
       <DropdownMenuImage
         imgProps={{
           src: `${import.meta.env.VITE_ASSET_BASE_URL}${data.imagePath}`,
         }}
-        characters={characters}
+        characters={data.characters}
       />
     </div>
   )

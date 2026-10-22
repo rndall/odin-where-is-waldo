@@ -21,20 +21,19 @@ levelsRouter.get(
 
       const level = await db.orm.public.Level.where({
         number: levelNumber,
-      })
-        .include("targets", (target) =>
-          target
-            .select("id", "x", "y")
-            .orderBy((target) => target.id.asc())
-            .include("character")
-        )
-        .first()
+      }).first()
 
       if (!level) {
         throw createHttpError(404, "Level not found")
       }
 
-      res.json(level)
+      const characters = await db.orm.public.Character.where((c) =>
+        c.targets.some((t) => t.levelId.eq(level.id))
+      )
+        .orderBy((c) => c.id.asc())
+        .all()
+
+      res.json({ ...level, characters })
     }
   )
 )
