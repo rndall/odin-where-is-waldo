@@ -1,0 +1,34 @@
+{
+  "name": "@workspace/core-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "dependencies": {
+    "@orpc/openapi": "^2.0.0-beta.44",
+    "@orpc/server": "2.0.0-beta.44",
+    "@workspace/db": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@jest/globals": "^30.5.2",
+    "@types/node": "^26.6.5",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^10.13.0",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "^8.72.0"
+  }
+}

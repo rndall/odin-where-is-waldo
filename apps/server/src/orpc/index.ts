@@ -3,8 +3,7 @@ import { OpenAPIHandler } from "@orpc/openapi/node"
 import { OpenAPIReferenceHandlerPlugin } from "@orpc/openapi/plugins"
 import { onError } from "@orpc/server"
 import { ZodToJsonSchemaConverter } from "@orpc/zod"
-
-import { router } from "./router"
+import { router } from "@workspace/core-service"
 
 export const generator = new OpenAPIGenerator({
   converters: [new ZodToJsonSchemaConverter()],
