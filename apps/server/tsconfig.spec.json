@@ -1,8 +1,7 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "."
-  },
-  "include": ["src", "jest.config.ts"],
-  "exclude": ["node_modules", "dist"]
+    "module": "ESNext",
+    "target": "ESNext",
+    "esModuleInterop": true
+  }
 }
