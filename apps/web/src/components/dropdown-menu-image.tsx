@@ -1,3 +1,4 @@
+import { getRouteApi } from "@tanstack/react-router"
 import { useRef, useState, type ImgHTMLAttributes } from "react"
 
 import {
@@ -7,19 +8,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
-import type { Level } from "@workspace/shared"
+import { Spinner } from "@workspace/ui/components/spinner"
+import { titleCase, type Level } from "@workspace/shared"
+import { useFindCharacterMutation } from "@/features/levels/hooks/useFindCharacterMutation"
 import { LevelImage } from "./level-image"
-import { titleCase } from "@/utils/utils"
 
 interface DropdownMenuImageProps {
   imgProps: ImgHTMLAttributes<HTMLImageElement>
   characters: Level["characters"]
 }
 
+const route = getRouteApi("/levels/$levelNumber")
+
 export function DropdownMenuImage({
   imgProps,
   characters,
 }: DropdownMenuImageProps) {
+  const [correctFinds, setCorrectFinds] = useState<number[]>([])
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number }>({
     open: false,
     x: 0,
@@ -43,7 +48,26 @@ export function DropdownMenuImage({
     const xCoord = Math.floor((x / rect.width) * 10000) / 100
     const yCoord = Math.floor((y / rect.height) * 10000) / 100
     setCoords({ x: xCoord, y: yCoord })
-    console.log({ xCoord, yCoord })
+  }
+
+  const { mutate, isPending, variables } = useFindCharacterMutation()
+  const { levelNumber } = route.useParams()
+
+  const handleFindChar = (characterId: number) => {
+    mutate(
+      {
+        levelNumber: Number(levelNumber),
+        body: { ...coords, characterId },
+      },
+      {
+        onSuccess: ({ found }, { body: { characterId } }) => {
+          if (found) {
+            setCorrectFinds((c) => [...c, characterId])
+          }
+          setMenu((m) => ({ ...m, open: false }))
+        },
+      }
+    )
   }
 
   return (
@@ -65,12 +89,20 @@ export function DropdownMenuImage({
       <DropdownMenuContent key={`${menu.x}-${menu.y}`} anchor={anchor}>
         <DropdownMenuGroup>
           {characters.map((c) => (
-            <DropdownMenuItem key={c.id}>
+            <DropdownMenuItem
+              closeOnClick={false}
+              key={c.id}
+              disabled={correctFinds.includes(c.id)}
+              onClick={() => handleFindChar(c.id)}
+            >
               <img
                 className="size-8 object-cover"
                 src={`${import.meta.env.VITE_ASSET_BASE_URL}${c.imagePath}`}
               />
-              <span>{titleCase(c.name)}</span>
+              {titleCase(c.name)}
+              {isPending && variables.body.characterId === c.id && (
+                <Spinner className="ml-auto" />
+              )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>

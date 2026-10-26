@@ -26,6 +26,5 @@
       "@/*": ["./src/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     }
-  },
-  "include": ["src"]
+  }
 }

@@ -12,6 +12,8 @@ import { levelsRouter } from "./routes/levels"
 
 const app: Express = express()
 
+app.use(express.json())
+
 app.use(
   "/images",
   express.static(join(import.meta.dirname, "../public/images"))
