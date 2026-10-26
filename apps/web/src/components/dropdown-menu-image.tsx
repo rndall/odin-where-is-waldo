@@ -7,14 +7,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
+import type { Level } from "@workspace/shared"
 import { LevelImage } from "./level-image"
+import { titleCase } from "@/utils/utils"
 
 interface DropdownMenuImageProps {
   imgProps: ImgHTMLAttributes<HTMLImageElement>
-  characters: unknown[]
+  characters: Level["characters"]
 }
 
-export function DropdownMenuImage({ imgProps }: DropdownMenuImageProps) {
+export function DropdownMenuImage({
+  imgProps,
+  characters,
+}: DropdownMenuImageProps) {
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number }>({
     open: false,
     x: 0,
@@ -59,20 +64,15 @@ export function DropdownMenuImage({ imgProps }: DropdownMenuImageProps) {
       />
       <DropdownMenuContent key={`${menu.x}-${menu.y}`} anchor={anchor}>
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => console.log(coords)}>
-            <img
-              className="size-8 object-cover"
-              src="https://imgs.search.brave.com/mllWmd6eU9HsOaqg76Mw-bEt5dfho5b8ovMmkA_yuBk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnJl/ZGQuaXQveG0xaXZ3/a2RpdWpmMS5qcGc"
-            />
-            <span>test</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <img
-              className="size-8 object-cover"
-              src="https://imgs.search.brave.com/59mewaK9f2-Q-KPX1gQ_OJRkzPrn5TVphUCxJ4sJt9Y/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnJl/ZGQuaXQvbGFzODBj/dmltazlkMS5qcGVn"
-            />
-            <span>test</span>
-          </DropdownMenuItem>
+          {characters.map((c) => (
+            <DropdownMenuItem key={c.id}>
+              <img
+                className="size-8 object-cover"
+                src={`${import.meta.env.VITE_ASSET_BASE_URL}${c.imagePath}`}
+              />
+              <span>{titleCase(c.name)}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
