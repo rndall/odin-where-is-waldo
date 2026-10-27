@@ -11,7 +11,8 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 import { titleCase, type Level } from "@workspace/shared"
 import { useFindCharacterMutation } from "@/features/levels/hooks/useFindCharacterMutation"
-import { LevelImage } from "./level-image"
+import LevelImage from "./level-image"
+import CharacterFindMarkers from "./character-find-marker"
 
 interface DropdownMenuImageProps {
   imgProps: ImgHTMLAttributes<HTMLImageElement>
@@ -20,11 +21,17 @@ interface DropdownMenuImageProps {
 
 const route = getRouteApi("/levels/$levelNumber")
 
-export function DropdownMenuImage({
+export interface CharacterFindMarker {
+  characterId: number
+  x: number
+  y: number
+}
+
+export default function DropdownMenuImage({
   imgProps,
   characters,
 }: DropdownMenuImageProps) {
-  const [correctFinds, setCorrectFinds] = useState<number[]>([])
+  const [correctFinds, setCorrectFinds] = useState<CharacterFindMarker[]>([])
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number }>({
     open: false,
     x: 0,
@@ -60,9 +67,9 @@ export function DropdownMenuImage({
         body: { ...coords, characterId },
       },
       {
-        onSuccess: ({ found }, { body: { characterId } }) => {
+        onSuccess: ({ found }, { body: { characterId, x, y } }) => {
           if (found) {
-            setCorrectFinds((c) => [...c, characterId])
+            setCorrectFinds((c) => [...c, { characterId, x, y }])
           }
           setMenu((m) => ({ ...m, open: false }))
         },
@@ -84,7 +91,12 @@ export function DropdownMenuImage({
     >
       <DropdownMenuTrigger
         nativeButton={false}
-        render={<LevelImage ref={imageRef} {...imgProps} />}
+        render={
+          <div className="relative mx-auto w-fit max-w-full">
+            <LevelImage ref={imageRef} {...imgProps} />
+            <CharacterFindMarkers markers={correctFinds} />
+          </div>
+        }
       />
       <DropdownMenuContent key={`${menu.x}-${menu.y}`} anchor={anchor}>
         <DropdownMenuGroup>
@@ -92,7 +104,9 @@ export function DropdownMenuImage({
             <DropdownMenuItem
               closeOnClick={false}
               key={c.id}
-              disabled={correctFinds.includes(c.id)}
+              disabled={
+                !!correctFinds.find((find) => find.characterId === c.id)
+              }
               onClick={() => handleFindChar(c.id)}
             >
               <img

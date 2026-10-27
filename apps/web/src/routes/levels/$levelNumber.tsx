@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
-
-import { DropdownMenuImage } from "@/components/dropdown-menu-image"
-
-import { levelQueries } from "@/features/levels/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
+
+import DropdownMenuImage from "@/components/dropdown-menu-image"
+import { levelQueries } from "@/features/levels/queries"
 
 export const Route = createFileRoute("/levels/$levelNumber")({
   context: ({ params }) => ({
