@@ -1,4 +1,4 @@
-import type { CharacterFindMarker } from "./dropdown-menu-image"
+import type { CharacterFindMarker } from "@/routes/levels/$levelNumber"
 
 export default function CharacterFindMarkers({
   markers,

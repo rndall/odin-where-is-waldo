@@ -11,27 +11,25 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 import { titleCase, type Level } from "@workspace/shared"
 import { useFindCharacterMutation } from "@/features/levels/hooks/useFindCharacterMutation"
+import type { CharacterFindMarker } from "@/routes/levels/$levelNumber"
 import LevelImage from "./level-image"
 import CharacterFindMarkers from "./character-find-marker"
 
 interface DropdownMenuImageProps {
   imgProps: ImgHTMLAttributes<HTMLImageElement>
   characters: Level["characters"]
+  foundCharacters: CharacterFindMarker[]
+  onCorrectSelection: (selection: CharacterFindMarker) => void
 }
 
 const route = getRouteApi("/levels/$levelNumber")
 
-export interface CharacterFindMarker {
-  characterId: number
-  x: number
-  y: number
-}
-
 export default function DropdownMenuImage({
   imgProps,
   characters,
+  foundCharacters,
+  onCorrectSelection,
 }: DropdownMenuImageProps) {
-  const [correctFinds, setCorrectFinds] = useState<CharacterFindMarker[]>([])
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number }>({
     open: false,
     x: 0,
@@ -67,9 +65,9 @@ export default function DropdownMenuImage({
         body: { ...coords, characterId },
       },
       {
-        onSuccess: ({ found }, { body: { characterId, x, y } }) => {
+        onSuccess: ({ found }, { body }) => {
           if (found) {
-            setCorrectFinds((c) => [...c, { characterId, x, y }])
+            onCorrectSelection(body)
           }
           setMenu((m) => ({ ...m, open: false }))
         },
@@ -94,7 +92,7 @@ export default function DropdownMenuImage({
         render={
           <div className="relative mx-auto w-fit max-w-full">
             <LevelImage ref={imageRef} {...imgProps} />
-            <CharacterFindMarkers markers={correctFinds} />
+            <CharacterFindMarkers markers={foundCharacters} />
           </div>
         }
       />
@@ -105,7 +103,7 @@ export default function DropdownMenuImage({
               closeOnClick={false}
               key={c.id}
               disabled={
-                !!correctFinds.find((find) => find.characterId === c.id)
+                !!foundCharacters.find((find) => find.characterId === c.id)
               }
               onClick={() => handleFindChar(c.id)}
             >
