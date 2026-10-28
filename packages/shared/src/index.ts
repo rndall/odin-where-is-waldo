@@ -1,4 +1,5 @@
 export * from "./error"
 export * from "./utils"
-export * from "./level"
+export * from "./features/game"
+export * from "./features/level"
 export * from "./param"

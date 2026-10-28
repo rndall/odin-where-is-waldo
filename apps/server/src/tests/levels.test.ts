@@ -32,10 +32,8 @@ describe("Level", () => {
   beforeEach(async () => {
     await db.transaction(async (tx) => {
       await tx.orm.public.Target.where({}).deleteAll()
-      await Promise.all([
-        tx.orm.public.Character.where({}).deleteAll(),
-        tx.orm.public.Level.where({}).deleteAll(),
-      ])
+      await tx.orm.public.Character.where({}).deleteAll()
+      await tx.orm.public.Level.where({}).deleteAll()
     })
   })
 

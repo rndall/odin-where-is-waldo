@@ -1,6 +1,6 @@
 import type { Response } from "express"
 import createHttpError from "http-errors"
-import z from "zod"
+import { z } from "zod"
 
 import { db } from "@workspace/db"
 import {

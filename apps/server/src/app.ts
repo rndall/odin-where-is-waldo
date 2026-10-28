@@ -8,6 +8,7 @@ import express, {
 import createError from "http-errors"
 import { join } from "node:path"
 
+import { gamesRouter } from "./routes/games"
 import { levelsRouter } from "./routes/levels"
 
 const app: Express = express()
@@ -20,6 +21,7 @@ app.use(
 )
 
 const apiRouter = Router()
+apiRouter.use("/games", gamesRouter)
 apiRouter.use("/levels", levelsRouter)
 
 app.use("/api", apiRouter)
