@@ -19,9 +19,8 @@ const createLevel = () =>
       imagePath: "/images/levels/level1-scene.webp",
     })
 
-    for (const [index, target] of LEVEL.targets.entries())
+    for (const target of LEVEL.targets)
       await tx.orm.public.Target.create({
-        id: index + 1,
         levelId: LEVEL.levelId,
         ...target,
       })

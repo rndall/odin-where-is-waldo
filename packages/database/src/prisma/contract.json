@@ -8,6 +8,14 @@
       "model": "Character",
       "namespace": "public"
     },
+    "FoundCharacter": {
+      "model": "FoundCharacter",
+      "namespace": "public"
+    },
+    "Game": {
+      "model": "Game",
+      "namespace": "public"
+    },
     "Level": {
       "model": "Level",
       "namespace": "public"
@@ -46,6 +54,21 @@
               }
             },
             "relations": {
+              "foundCharacters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "characterId"
+                  ]
+                },
+                "to": {
+                  "model": "FoundCharacter",
+                  "namespace": "public"
+                }
+              },
               "targets": {
                 "cardinality": "1:N",
                 "on": {
@@ -78,6 +101,173 @@
               "table": "Character"
             }
           },
+          "FoundCharacter": {
+            "fields": {
+              "characterId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "gameId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "character": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "characterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Character",
+                  "namespace": "public"
+                }
+              },
+              "game": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "gameId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Game",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "characterId": {
+                  "column": "characterId"
+                },
+                "gameId": {
+                  "column": "gameId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "FoundCharacter"
+            }
+          },
+          "Game": {
+            "fields": {
+              "elapsedMs": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "finishedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "levelId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "playerName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "foundCharacters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "gameId"
+                  ]
+                },
+                "to": {
+                  "model": "FoundCharacter",
+                  "namespace": "public"
+                }
+              },
+              "level": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "levelId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Level",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "elapsedMs": {
+                  "column": "elapsedMs"
+                },
+                "finishedAt": {
+                  "column": "finishedAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "levelId": {
+                  "column": "levelId"
+                },
+                "playerName": {
+                  "column": "playerName"
+                },
+                "startedAt": {
+                  "column": "startedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Game"
+            }
+          },
           "Level": {
             "fields": {
               "id": {
@@ -103,6 +293,21 @@
               }
             },
             "relations": {
+              "games": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "levelId"
+                  ]
+                },
+                "to": {
+                  "model": "Game",
+                  "namespace": "public"
+                }
+              },
               "targets": {
                 "cardinality": "1:N",
                 "on": {
@@ -138,13 +343,6 @@
           "Target": {
             "fields": {
               "characterId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
@@ -212,9 +410,6 @@
                 "characterId": {
                   "column": "characterId"
                 },
-                "id": {
-                  "column": "id"
-                },
                 "levelId": {
                   "column": "levelId"
                 },
@@ -275,6 +470,169 @@
                 }
               ]
             },
+            "FoundCharacter": {
+              "columns": {
+                "characterId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "gameId": {
+                  "codecId": "pg/uuid@1",
+                  "dataType": "pg/uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "FoundCharacter_gameId_idx_6cdb47f8"
+                  },
+                  "source": {
+                    "columns": [
+                      "gameId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FoundCharacter"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Game"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "FoundCharacter_characterId_idx_2423fe9d"
+                  },
+                  "source": {
+                    "columns": [
+                      "characterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FoundCharacter"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Character"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "characterId"
+                  ],
+                  "name": "FoundCharacter_characterId_idx_2423fe9d",
+                  "prefix": "FoundCharacter_characterId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "gameId"
+                  ],
+                  "name": "FoundCharacter_gameId_idx_6cdb47f8",
+                  "prefix": "FoundCharacter_gameId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "gameId",
+                  "characterId"
+                ]
+              },
+              "uniques": []
+            },
+            "Game": {
+              "columns": {
+                "elapsedMs": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "finishedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "dataType": "pg/uuid",
+                  "nullable": false
+                },
+                "levelId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "playerName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "startedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Game_levelId_idx_622a0732"
+                  },
+                  "source": {
+                    "columns": [
+                      "levelId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Game"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Level"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "levelId",
+                    "elapsedMs"
+                  ],
+                  "name": "Game_levelId_elapsedMs_idx_261447d5",
+                  "prefix": "Game_levelId_elapsedMs_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "levelId"
+                  ],
+                  "name": "Game_levelId_idx_622a0732",
+                  "prefix": "Game_levelId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Level": {
               "columns": {
                 "id": {
@@ -317,15 +675,6 @@
                 "characterId": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
-                  "nullable": false
-                },
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
                   "nullable": false
                 },
                 "levelId": {
@@ -404,17 +753,11 @@
               ],
               "primaryKey": {
                 "columns": [
-                  "id"
+                  "levelId",
+                  "characterId"
                 ]
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "levelId",
-                    "characterId"
-                  ]
-                }
-              ]
+              "uniques": []
             }
           }
         },
@@ -422,7 +765,25 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c4e663769e0f5431c064193887834c9f117d53ccc42a6e9db9d7f316ec4752d0"
+    "storageHash": "7afd646d1e9d775b45e704a448c62da0a38e80bb2d2549f26b3842c32ef4f6ec"
+  },
+  "execution": {
+    "executionHash": "f8430068fb005344b4eea6901ca6e57b07618dc895217b0d0b0dda5fcbb25a12",
+    "mutations": {
+      "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Game",
+            "field": "id",
+            "namespace": "public"
+          }
+        }
+      ]
+    }
   },
   "capabilities": {
     "postgres": {

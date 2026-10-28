@@ -1,13 +1,37 @@
 // use prisma-8
+model Game {
+  id              Uuid               @id @onCreate(uuid())
+  startedAt       TimestamptzString  @default(now())
+  finishedAt      TimestamptzString?
+  playerName      String?
+  elapsedMs       Int?
+
+  foundCharacters FoundCharacter[]
+  level           Level              @relation(fields: [levelId], references: [id])
+  levelId         Int
+
+  @@index([levelId, elapsedMs])
+}
+
+model FoundCharacter {
+  game        Game      @relation(fields: [gameId], references: [id])
+  gameId      Uuid
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int
+
+  @@id([gameId, characterId])
+}
+
 model Level {
   id        Int      @id @default(autoincrement())
   number    Int      @unique
   imagePath String
+
   targets   Target[]
+  games     Game[]
 }
 
 model Target {
-  id          Int       @id @default(autoincrement())
   x           Float
   y           Float
 
@@ -16,12 +40,14 @@ model Target {
   character   Character @relation(fields: [characterId], references: [id])
   characterId Int
 
-  @@unique([levelId, characterId])
+  @@id([levelId, characterId])
 }
 
 model Character {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  imagePath String
-  targets   Target[]
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  imagePath       String
+
+  targets         Target[]
+  foundCharacters FoundCharacter[]
 }

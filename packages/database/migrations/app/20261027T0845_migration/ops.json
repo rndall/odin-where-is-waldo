@@ -1,0 +1,646 @@
+[
+  {
+    "id": "dropConstraint.Target.Target_levelId_characterId_key",
+    "label": "Drop constraint \"Target_levelId_characterId_key\" on \"Target\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Target_levelId_characterId_key",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Target_levelId_characterId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_levelId_characterId_key",
+          "public",
+          "\"public\".\"Target\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"Target_levelId_characterId_key\" on \"Target\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"Target_levelId_characterId_key\"",
+        "sql": "ALTER TABLE \"public\".\"Target\" DROP CONSTRAINT \"Target_levelId_characterId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Target_levelId_characterId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_levelId_characterId_key",
+          "public",
+          "\"public\".\"Target\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"Target_levelId_characterId_key\" on \"Target\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.Target.Target_pkey",
+    "label": "Drop constraint \"Target_pkey\" on \"Target\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "primaryKey",
+        "name": "Target_pkey",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Target_pkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_pkey",
+          "public",
+          "\"public\".\"Target\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"Target_pkey\" on \"Target\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"Target_pkey\"",
+        "sql": "ALTER TABLE \"public\".\"Target\" DROP CONSTRAINT \"Target_pkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Target_pkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_pkey",
+          "public",
+          "\"public\".\"Target\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"Target_pkey\" on \"Target\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Target.id",
+    "label": "Drop column \"id\" from \"Target\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "id",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Target",
+          "id"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"id\" on \"Target\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"id\"",
+        "sql": "ALTER TABLE \"public\".\"Target\" DROP COLUMN \"id\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"id\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Target",
+          "id"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"id\" on \"Target\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.FoundCharacter",
+    "label": "Create table \"FoundCharacter\"",
+    "summary": "Creates table \"FoundCharacter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "FoundCharacter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"FoundCharacter\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FoundCharacter\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"FoundCharacter\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"FoundCharacter\"",
+        "sql": "CREATE TABLE \"public\".\"FoundCharacter\" (\n  \"characterId\" int4 NOT NULL,\n  \"gameId\" uuid NOT NULL,\n  PRIMARY KEY (\"gameId\", \"characterId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"FoundCharacter\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"FoundCharacter\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"FoundCharacter\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Game",
+    "label": "Create table \"Game\"",
+    "summary": "Creates table \"Game\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Game"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Game\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Game\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Game\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Game\"",
+        "sql": "CREATE TABLE \"public\".\"Game\" (\n  \"elapsedMs\" int4,\n  \"finishedAt\" timestamptz,\n  \"id\" uuid NOT NULL,\n  \"levelId\" int4 NOT NULL,\n  \"playerName\" text,\n  \"startedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Game\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Game\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Game\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "primaryKey.Target.Target_pkey",
+    "label": "Add primary key on \"Target\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "primaryKey",
+        "name": "Target_pkey",
+        "table": "Target"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure primary key \"Target_pkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Target_pkey",
+          "public",
+          "\"public\".\"Target\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "primary key \"Target_pkey\" on \"Target\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add primary key \"Target_pkey\"",
+        "sql": "ALTER TABLE \"public\".\"Target\" ADD CONSTRAINT \"Target_pkey\" PRIMARY KEY (\"levelId\", \"characterId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify primary key \"Target_pkey\" exists on (levelId, characterId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "Target_pkey",
+          "public",
+          "\"public\".\"Target\"",
+          "p",
+          "[\"levelId\",\"characterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FoundCharacter.FoundCharacter_characterId_idx_2423fe9d",
+    "label": "Create index \"FoundCharacter_characterId_idx_2423fe9d\" on \"FoundCharacter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FoundCharacter_characterId_idx_2423fe9d",
+        "table": "FoundCharacter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FoundCharacter_characterId_idx_2423fe9d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FoundCharacter_characterId_idx_2423fe9d\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"FoundCharacter_characterId_idx_2423fe9d\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FoundCharacter_characterId_idx_2423fe9d\"",
+        "sql": "CREATE INDEX \"FoundCharacter_characterId_idx_2423fe9d\" ON \"public\".\"FoundCharacter\" (\"characterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FoundCharacter_characterId_idx_2423fe9d\" exists on \"FoundCharacter\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"FoundCharacter_characterId_idx_2423fe9d\"",
+          "i",
+          "I",
+          "\"public\".\"FoundCharacter\"",
+          "btree",
+          "[\"characterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FoundCharacter.FoundCharacter_gameId_idx_6cdb47f8",
+    "label": "Create index \"FoundCharacter_gameId_idx_6cdb47f8\" on \"FoundCharacter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FoundCharacter_gameId_idx_6cdb47f8",
+        "table": "FoundCharacter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FoundCharacter_gameId_idx_6cdb47f8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FoundCharacter_gameId_idx_6cdb47f8\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"FoundCharacter_gameId_idx_6cdb47f8\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FoundCharacter_gameId_idx_6cdb47f8\"",
+        "sql": "CREATE INDEX \"FoundCharacter_gameId_idx_6cdb47f8\" ON \"public\".\"FoundCharacter\" (\"gameId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FoundCharacter_gameId_idx_6cdb47f8\" exists on \"FoundCharacter\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"FoundCharacter_gameId_idx_6cdb47f8\"",
+          "i",
+          "I",
+          "\"public\".\"FoundCharacter\"",
+          "btree",
+          "[\"gameId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Game.Game_levelId_elapsedMs_idx_261447d5",
+    "label": "Create index \"Game_levelId_elapsedMs_idx_261447d5\" on \"Game\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Game_levelId_elapsedMs_idx_261447d5",
+        "table": "Game"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Game_levelId_elapsedMs_idx_261447d5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Game_levelId_elapsedMs_idx_261447d5\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Game_levelId_elapsedMs_idx_261447d5\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Game_levelId_elapsedMs_idx_261447d5\"",
+        "sql": "CREATE INDEX \"Game_levelId_elapsedMs_idx_261447d5\" ON \"public\".\"Game\" (\"levelId\", \"elapsedMs\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Game_levelId_elapsedMs_idx_261447d5\" exists on \"Game\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Game_levelId_elapsedMs_idx_261447d5\"",
+          "i",
+          "I",
+          "\"public\".\"Game\"",
+          "btree",
+          "[\"levelId\",\"elapsedMs\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Game.Game_levelId_idx_622a0732",
+    "label": "Create index \"Game_levelId_idx_622a0732\" on \"Game\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Game_levelId_idx_622a0732",
+        "table": "Game"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Game_levelId_idx_622a0732\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Game_levelId_idx_622a0732\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Game_levelId_idx_622a0732\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Game_levelId_idx_622a0732\"",
+        "sql": "CREATE INDEX \"Game_levelId_idx_622a0732\" ON \"public\".\"Game\" (\"levelId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Game_levelId_idx_622a0732\" exists on \"Game\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Game_levelId_idx_622a0732\"",
+          "i",
+          "I",
+          "\"public\".\"Game\"",
+          "btree",
+          "[\"levelId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FoundCharacter.FoundCharacter_gameId_fkey",
+    "label": "Add foreign key \"FoundCharacter_gameId_fkey\" on \"FoundCharacter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FoundCharacter_gameId_fkey",
+        "table": "FoundCharacter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FoundCharacter_gameId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FoundCharacter_gameId_fkey",
+          "public",
+          "\"public\".\"FoundCharacter\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"FoundCharacter_gameId_fkey\" on \"FoundCharacter\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FoundCharacter_gameId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FoundCharacter\"\nADD CONSTRAINT \"FoundCharacter_gameId_fkey\"\nFOREIGN KEY (\"gameId\")\nREFERENCES \"public\".\"Game\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FoundCharacter_gameId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "FoundCharacter_gameId_fkey",
+          "public",
+          "\"public\".\"FoundCharacter\"",
+          "f",
+          "[\"gameId\"]",
+          "\"public\".\"Game\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FoundCharacter.FoundCharacter_characterId_fkey",
+    "label": "Add foreign key \"FoundCharacter_characterId_fkey\" on \"FoundCharacter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FoundCharacter_characterId_fkey",
+        "table": "FoundCharacter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FoundCharacter_characterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FoundCharacter_characterId_fkey",
+          "public",
+          "\"public\".\"FoundCharacter\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"FoundCharacter_characterId_fkey\" on \"FoundCharacter\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FoundCharacter_characterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FoundCharacter\"\nADD CONSTRAINT \"FoundCharacter_characterId_fkey\"\nFOREIGN KEY (\"characterId\")\nREFERENCES \"public\".\"Character\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FoundCharacter_characterId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "FoundCharacter_characterId_fkey",
+          "public",
+          "\"public\".\"FoundCharacter\"",
+          "f",
+          "[\"characterId\"]",
+          "\"public\".\"Character\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Game.Game_levelId_fkey",
+    "label": "Add foreign key \"Game_levelId_fkey\" on \"Game\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Game_levelId_fkey",
+        "table": "Game"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Game_levelId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Game_levelId_fkey",
+          "public",
+          "\"public\".\"Game\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"Game_levelId_fkey\" on \"Game\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Game_levelId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Game\"\nADD CONSTRAINT \"Game_levelId_fkey\"\nFOREIGN KEY (\"levelId\")\nREFERENCES \"public\".\"Level\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Game_levelId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "Game_levelId_fkey",
+          "public",
+          "\"public\".\"Game\"",
+          "f",
+          "[\"levelId\"]",
+          "\"public\".\"Level\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]
