@@ -10,7 +10,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { titleCase, type Level } from "@workspace/shared"
-import { useFindCharacterMutation } from "@/features/levels/hooks/useFindCharacterMutation"
+import { useFindCharacterMutation } from "@/features/games/hooks/useFindCharacterMutation"
 import type { CharacterFindMarker } from "@/routes/levels/$levelNumber"
 import LevelImage from "./level-image"
 import CharacterFindMarkers from "./character-find-marker"
@@ -56,16 +56,20 @@ export default function DropdownMenuImage({
   }
 
   const { mutate, isPending, variables } = useFindCharacterMutation()
-  const { levelNumber } = route.useParams()
+  const { gameId } = route.useSearch()
 
   const handleFindChar = (characterId: number) => {
     mutate(
       {
-        levelNumber: Number(levelNumber),
+        gameId,
         body: { ...coords, characterId },
       },
       {
-        onSuccess: ({ found }, { body }) => {
+        onSuccess: ({ found, finished }, { body }) => {
+          if (finished) {
+            console.log("Finished!")
+          }
+
           if (found) {
             onCorrectSelection(body)
           }

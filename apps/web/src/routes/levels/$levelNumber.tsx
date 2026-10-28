@@ -1,15 +1,27 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import { z } from "zod"
 
+import CharacterIcons from "@/components/character-icons"
 import DropdownMenuImage from "@/components/dropdown-menu-image"
 import { levelQueries } from "@/features/levels/queries"
-import CharacterIcons from "@/components/character-icons"
-import { useState } from "react"
+import { startGame } from "@/features/games/api"
 
 export const Route = createFileRoute("/levels/$levelNumber")({
+  validateSearch: z.object({
+    gameId: z.uuid().catch(""),
+  }),
   context: ({ params }) => ({
     levelQueryOptions: levelQueries.detail(Number(params.levelNumber)),
   }),
+  beforeLoad: async ({ search, params }) => {
+    if (search.gameId) return
+    const { gameId } = await startGame({
+      levelNumber: Number(params.levelNumber),
+    })
+    throw redirect({ params, search: { gameId }, replace: true })
+  },
   loader: ({ context }) => {
     context.queryClient.query({
       ...context.levelQueryOptions,
