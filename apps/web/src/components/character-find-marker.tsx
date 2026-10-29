@@ -1,4 +1,4 @@
-import type { CharacterFindMarker } from "@/routes/levels/$levelNumber"
+import type { CharacterFindMarker } from "@/routes/games/$gameId"
 
 export default function CharacterFindMarkers({
   markers,

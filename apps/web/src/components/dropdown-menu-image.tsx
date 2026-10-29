@@ -9,26 +9,23 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { titleCase, type Level } from "@workspace/shared"
+import { titleCase, type Game } from "@workspace/shared"
 import { useFindCharacterMutation } from "@/features/games/hooks/useFindCharacterMutation"
-import type { CharacterFindMarker } from "@/routes/levels/$levelNumber"
 import LevelImage from "./level-image"
 import CharacterFindMarkers from "./character-find-marker"
 
 interface DropdownMenuImageProps {
   imgProps: ImgHTMLAttributes<HTMLImageElement>
-  characters: Level["characters"]
-  foundCharacters: CharacterFindMarker[]
-  onCorrectSelection: (selection: CharacterFindMarker) => void
+  characters: NonNullable<Game["level"]>["targets"]
+  foundCharacters: Game["foundCharacters"]
 }
 
-const route = getRouteApi("/levels/$levelNumber")
+const route = getRouteApi("/games/$gameId")
 
 export default function DropdownMenuImage({
   imgProps,
   characters,
   foundCharacters,
-  onCorrectSelection,
 }: DropdownMenuImageProps) {
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number }>({
     open: false,
@@ -56,7 +53,7 @@ export default function DropdownMenuImage({
   }
 
   const { mutate, isPending, variables } = useFindCharacterMutation()
-  const { gameId } = route.useSearch()
+  const { gameId } = route.useParams()
 
   const handleFindChar = (characterId: number) => {
     mutate(
@@ -65,14 +62,11 @@ export default function DropdownMenuImage({
         body: { ...coords, characterId },
       },
       {
-        onSuccess: ({ found, finished }, { body }) => {
+        onSuccess: ({ finished }) => {
           if (finished) {
             console.log("Finished!")
           }
 
-          if (found) {
-            onCorrectSelection(body)
-          }
           setMenu((m) => ({ ...m, open: false }))
         },
       }

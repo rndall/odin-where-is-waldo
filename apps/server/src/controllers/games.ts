@@ -7,6 +7,7 @@ import {
   GameFindBodySchema,
   StartGameBodySchema,
   titleCase,
+  type Game,
   type GameFindReturn,
   type StartGameReturn,
 } from "@workspace/shared"
@@ -33,6 +34,59 @@ export const startGame = makeValidatedEndpoint(
     const game = await db.orm.public.Game.create({ levelId: level.id })
 
     res.status(201).json({ gameId: game.id })
+  }
+)
+
+export const getGameById = makeValidatedEndpoint(
+  {
+    params: z.object({
+      gameId: z.uuid(),
+    }),
+  },
+  async (req, res: Response<Game>) => {
+    const { gameId } = req.params
+
+    const game = await db.orm.public.Game.where({ id: gameId })
+      .select("id", "startedAt", "finishedAt", "elapsedMs")
+      .include("foundCharacters", (character) =>
+        character
+          .select("characterId")
+          .orderBy((character) => character.characterId.asc())
+      )
+      .include("level", (level) =>
+        level.include("targets", (target) =>
+          target
+            .select("characterId", "x", "y")
+            .orderBy((target) => target.characterId.asc())
+            .include("character")
+        )
+      )
+      .first()
+
+    if (!game) {
+      throw createHttpError(404, "Game not found")
+    }
+
+    const foundCharacters = game.foundCharacters.flatMap(({ characterId }) => {
+      const target = game.level?.targets.find(
+        (t) => t.characterId === characterId
+      )
+
+      if (!target) return []
+
+      return [{ characterId, x: target.x, y: target.y }]
+    })
+
+    res.json({
+      ...game,
+      foundCharacters,
+      level: game.level
+        ? {
+            ...game.level,
+            targets: game.level.targets.map(({ character }) => character),
+          }
+        : game.level,
+    })
   }
 )
 

@@ -1,5 +1,6 @@
 import {
   GameFindReturnSchema,
+  GameSchema,
   StartGameReturnSchema,
   type GameFindBody,
   type StartGameBody,
@@ -14,6 +15,11 @@ export const startGame = async (body: StartGameBody) => {
     body: JSON.stringify(body),
   })
   return parseJson(res, StartGameReturnSchema)
+}
+
+export const getGame = async (gameId: string) => {
+  const res = await fetch(apiUrl(`/games/${gameId}`))
+  return parseJson(res, GameSchema)
 }
 
 export const findCharacter = async ({

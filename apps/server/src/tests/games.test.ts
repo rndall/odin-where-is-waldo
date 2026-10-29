@@ -17,6 +17,81 @@ describe("Game", () => {
     await db.close()
   })
 
+  const startGame = async (levelNumber: number) => {
+    const res = await request(app)
+      .post("/api/games")
+      .send({ levelNumber })
+      .set("Accept", "application/json")
+
+    expect(res.status).toBe(201)
+
+    return StartGameReturnSchema.parse(res.body)
+  }
+
+  describe("get by id route", () => {
+    test("returns the correct game", async () => {
+      const level = await createLevel()
+      const { gameId } = await startGame(level.number)
+
+      const res = await request(app).get(`/api/games/${gameId}`)
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(200)
+      expect(res.body).toStrictEqual({
+        id: gameId,
+        startedAt: expect.any(String),
+        finishedAt: null,
+        elapsedMs: null,
+        foundCharacters: [],
+        level: {
+          ...level,
+          targets: [
+            {
+              id: 1,
+              imagePath: "/images/icons/odlaw.png",
+              name: "odlaw",
+            },
+            {
+              id: 2,
+              imagePath: "/images/icons/waldo.png",
+              name: "waldo",
+            },
+            {
+              id: 3,
+              imagePath: "/images/icons/wizard.webp",
+              name: "wizard",
+            },
+          ],
+        },
+      })
+    })
+
+    test("returns 404 on missing game", async () => {
+      const res = await request(app).get(`/api/games/${crypto.randomUUID()}`)
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(404)
+      expect(res.body).toStrictEqual({ message: "Game not found" })
+    })
+
+    test("returns 404 on invalid uuid", async () => {
+      const res = await request(app).get("/api/games/1")
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(400)
+      expect(res.body).toMatchObject({
+        message: "Validation failed",
+        errors: {
+          params: {
+            fieldErrors: {
+              gameId: ["Invalid UUID"],
+            },
+          },
+        },
+      })
+    })
+  })
+
   describe("post route", () => {
     test("returns created game id on existing level", async () => {
       const level = await db.orm.public.Level.create({
@@ -102,24 +177,15 @@ describe("Game", () => {
   })
 
   describe("find route", () => {
-    const startGame = async (levelNumber: number) => {
-      const res = await request(app)
-        .post("/api/games")
-        .send({ levelNumber })
-        .set("Accept", "application/json")
-
-      expect(res.status).toBe(201)
-
-      return StartGameReturnSchema.parse(res.body)
-    }
-
     test("returns found on correct target", async () => {
       const level = await createLevel()
       const { gameId } = await startGame(level.number)
 
+      const characterId = 2
+
       const res = await request(app)
         .post(`/api/games/${gameId}/find`)
-        .send({ characterId: 2, x: 53.02, y: 50.39 })
+        .send({ characterId, x: 53.02, y: 50.39 })
         .set("Accept", "application/json")
 
       expect(res.headers["content-type"]).toMatch(/json/)
@@ -128,6 +194,13 @@ describe("Game", () => {
         message: "You found Waldo",
         found: true,
         finished: false,
+      })
+
+      const getRes = await request(app).get(`/api/games/${gameId}`)
+      expect(getRes.headers["content-type"]).toMatch(/json/)
+      expect(getRes.status).toBe(200)
+      expect(getRes.body).toMatchObject({
+        foundCharacters: [{ characterId }],
       })
     })
 
@@ -151,7 +224,7 @@ describe("Game", () => {
 
     test("returns 404 on missing game", async () => {
       const res = await request(app)
-        .post("/api/games/3f2504e0-4f89-41d3-9a0c-0305e82c3301/find")
+        .post(`/api/games/${crypto.randomUUID()}/find`)
         .send({ characterId: 2, x: 53.02, y: 50.39 })
         .set("Accept", "application/json")
 
@@ -285,10 +358,22 @@ describe("Game", () => {
           })
           .set("Accept", "application/json")
 
+        expect(res.headers["content-type"]).toMatch(/json/)
         expect(res.status).toBe(200)
         expect(res.body).toMatchObject({
           found: true,
           finished: index === targets.length - 1,
+        })
+
+        const getRes = await request(app).get(`/api/games/${gameId}`)
+        expect(getRes.headers["content-type"]).toMatch(/json/)
+        expect(getRes.status).toBe(200)
+        expect(getRes.body).toMatchObject({
+          foundCharacters: expect.arrayContaining([
+            expect.objectContaining({
+              characterId: target.characterId,
+            }),
+          ]),
         })
       }
 

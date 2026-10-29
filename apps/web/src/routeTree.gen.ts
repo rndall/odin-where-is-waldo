@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LevelsLevelNumberRouteImport } from './routes/levels/$levelNumber'
+import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LevelsLevelNumberRoute = LevelsLevelNumberRouteImport.update({
-  id: '/levels/$levelNumber',
-  path: '/levels/$levelNumber',
+const GamesGameIdRoute = GamesGameIdRouteImport.update({
+  id: '/games/$gameId',
+  path: '/games/$gameId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/levels/$levelNumber': typeof LevelsLevelNumberRoute
+  '/games/$gameId': typeof GamesGameIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/levels/$levelNumber': typeof LevelsLevelNumberRoute
+  '/games/$gameId': typeof GamesGameIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/levels/$levelNumber': typeof LevelsLevelNumberRoute
+  '/games/$gameId': typeof GamesGameIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/levels/$levelNumber'
+  fullPaths: '/' | '/games/$gameId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/levels/$levelNumber'
-  id: '__root__' | '/' | '/levels/$levelNumber'
+  to: '/' | '/games/$gameId'
+  id: '__root__' | '/' | '/games/$gameId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LevelsLevelNumberRoute: typeof LevelsLevelNumberRoute
+  GamesGameIdRoute: typeof GamesGameIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/levels/$levelNumber': {
-      id: '/levels/$levelNumber'
-      path: '/levels/$levelNumber'
-      fullPath: '/levels/$levelNumber'
-      preLoaderRoute: typeof LevelsLevelNumberRouteImport
+    '/games/$gameId': {
+      id: '/games/$gameId'
+      path: '/games/$gameId'
+      fullPath: '/games/$gameId'
+      preLoaderRoute: typeof GamesGameIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LevelsLevelNumberRoute: LevelsLevelNumberRoute,
+  GamesGameIdRoute: GamesGameIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
