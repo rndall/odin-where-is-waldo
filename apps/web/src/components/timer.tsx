@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 
-const pad = (value: number) => String(value).padStart(2, "0")
+import type { Game } from "@workspace/shared"
+import { formatElapsed } from "@/utils/timer"
 
 interface TimerProps {
-  startedAt: string
+  startedAt: Game["startedAt"]
+  elapsedMs?: Game["elapsedMs"]
 }
-export default function Timer({ startedAt }: TimerProps) {
+export default function Timer({ startedAt, elapsedMs }: TimerProps) {
   const [elapsed, setElapsed] = useState(0)
 
   useEffect(() => {
@@ -17,17 +19,7 @@ export default function Timer({ startedAt }: TimerProps) {
     return () => clearInterval(intervalId)
   }, [startedAt])
 
-  const totalHundredths = Math.floor(elapsed / 10)
+  const time = elapsedMs ?? elapsed
 
-  const hours = Math.floor(totalHundredths / 360000)
-  const minutes = Math.floor(totalHundredths / 6000) % 60
-  const seconds = Math.floor(totalHundredths / 100) % 60
-  const hundredths = totalHundredths % 100
-
-  const parts: string[] = []
-  if (hours) parts.push(String(hours))
-  if (hours || minutes) parts.push(String(minutes))
-  parts.push(`${pad(seconds)}.${pad(hundredths)}`)
-
-  return <p className="tabular-nums">{parts.join(":")}</p>
+  return <p className="tabular-nums">{formatElapsed(time)}s</p>
 }

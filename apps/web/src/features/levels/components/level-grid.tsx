@@ -1,5 +1,3 @@
-import { useNavigate } from "@tanstack/react-router"
-
 import { Avatar, AvatarImage } from "@workspace/ui/components/avatar"
 import {
   Item,
@@ -10,14 +8,13 @@ import {
 } from "@workspace/ui/components/item"
 import type { Level } from "@workspace/shared"
 
-import { useStartGameMutation } from "@/features/games/hooks/useStartGameMutation"
+import { useStartGame } from "@/hooks/useStartGame"
 
 interface LevelGridProps {
   levels: Level[]
 }
 export default function LevelGrid({ levels }: LevelGridProps) {
-  const navigate = useNavigate()
-  const { mutate: startGame } = useStartGameMutation()
+  const startGame = useStartGame()
 
   return (
     <ItemGroup className="grid grid-cols-3 gap-4">
@@ -25,16 +22,7 @@ export default function LevelGrid({ levels }: LevelGridProps) {
         <Item
           key={level.id}
           className="shadow-muted/50 transition hover:-translate-y-2 hover:shadow"
-          onClick={() =>
-            startGame(
-              { levelNumber: level.number },
-              {
-                onSuccess: ({ gameId }) => {
-                  navigate({ to: "/games/$gameId", params: { gameId } })
-                },
-              }
-            )
-          }
+          onClick={() => startGame(level.number)}
           render={<button />}
         >
           <ItemHeader>

@@ -42,6 +42,7 @@ describe("Game", () => {
         finishedAt: null,
         elapsedMs: null,
         foundCharacters: [],
+        playerName: null,
         level: {
           ...level,
           targets: [
@@ -166,6 +167,128 @@ describe("Game", () => {
               body: {
                 fieldErrors: {
                   levelNumber: [expect.any(String)],
+                },
+              },
+            },
+          })
+        }
+      )
+    })
+  })
+
+  describe("set player name route", () => {
+    const setPlayerName = (gameId: string, playerName: string) =>
+      request(app)
+        .patch(`/api/games/${gameId}`)
+        .send({ playerName })
+        .set("Accept", "application/json")
+
+    const finishGame = async (gameId: string, levelId: number) => {
+      const level = await db.orm.public.Level.where({ id: levelId })
+        .include("targets")
+        .firstOrThrow()
+
+      for (const target of level.targets) {
+        const res = await request(app)
+          .post(`/api/games/${gameId}/find`)
+          .send({
+            characterId: target.characterId,
+            x: target.x,
+            y: target.y,
+          })
+          .set("Accept", "application/json")
+
+        expect(res.status).toBe(200)
+      }
+    }
+
+    test("returns updated game on success", async () => {
+      const level = await createLevel()
+      const { gameId } = await startGame(level.number)
+
+      await finishGame(gameId, level.id)
+
+      const playerName = "Player One"
+      const res = await setPlayerName(gameId, playerName)
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(200)
+      expect(res.body).toMatchObject({
+        id: gameId,
+        playerName,
+        finishedAt: expect.any(String),
+      })
+    })
+
+    test("returns 404 on missing game", async () => {
+      const res = await setPlayerName(crypto.randomUUID(), "Player One")
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(404)
+      expect(res.body).toStrictEqual({
+        message: "Game not found",
+      })
+    })
+
+    test("returns 409 when game isn't finished yet", async () => {
+      const level = await createLevel()
+      const { gameId } = await startGame(level.number)
+
+      const gameBefore = await db.orm.public.Game.where({
+        id: gameId,
+      }).firstOrThrow()
+
+      const res = await setPlayerName(gameId, "Player One")
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(409)
+      expect(res.body).toStrictEqual({
+        message: "Game isn't finished yet",
+      })
+
+      const gameAfter = await db.orm.public.Game.where({
+        id: gameId,
+      }).firstOrThrow()
+
+      expect(gameAfter.playerName).toBe(gameBefore.playerName)
+    })
+
+    describe("params", () => {
+      test("returns 400 on invalid uuid", async () => {
+        const res = await setPlayerName("1", "Player One")
+
+        expect(res.headers["content-type"]).toMatch(/json/)
+        expect(res.status).toBe(400)
+        expect(res.body).toMatchObject({
+          message: "Validation failed",
+          errors: {
+            params: {
+              fieldErrors: {
+                gameId: ["Invalid UUID"],
+              },
+            },
+          },
+        })
+      })
+    })
+
+    describe("body", () => {
+      test.each([{}, { playerName: 123 }])(
+        "returns 400 on invalid param %s",
+        async (param) => {
+          const res = await request(app)
+            .patch(`/api/games/${crypto.randomUUID()}`)
+            .send(param)
+            .set("Accept", "application/json")
+
+          expect(res.headers["content-type"]).toMatch(/json/)
+          expect(res.status).toBe(400)
+          expect(res.body).toMatchObject({
+            message: "Validation failed",
+            errors: {
+              body: {
+                fieldErrors: {
+                  playerName: [expect.any(String)],
                 },
               },
             },

@@ -18,6 +18,7 @@ interface DropdownMenuImageProps {
   imgProps: ImgHTMLAttributes<HTMLImageElement>
   characters: NonNullable<Game["level"]>["targets"]
   foundCharacters: Game["foundCharacters"]
+  onFinish: () => void
 }
 
 const route = getRouteApi("/games/$gameId")
@@ -26,6 +27,7 @@ export default function DropdownMenuImage({
   imgProps,
   characters,
   foundCharacters,
+  onFinish,
 }: DropdownMenuImageProps) {
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number }>({
     open: false,
@@ -63,9 +65,7 @@ export default function DropdownMenuImage({
       },
       {
         onSuccess: ({ finished }) => {
-          if (finished) {
-            console.log("Finished!")
-          }
+          if (finished) onFinish()
 
           setMenu((m) => ({ ...m, open: false }))
         },

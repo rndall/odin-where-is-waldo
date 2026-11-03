@@ -5,10 +5,13 @@ import { z } from "zod"
 import { db } from "@workspace/db"
 import {
   GameFindBodySchema,
+  GameSetPlayerNameBodySchema,
+  GameSetPlayerNameReturnSchema,
   StartGameBodySchema,
   titleCase,
   type Game,
   type GameFindReturn,
+  type GameSetPlayerNameReturn,
   type StartGameReturn,
 } from "@workspace/shared"
 import { makeValidatedEndpoint } from "../utils/endpoint"
@@ -47,7 +50,7 @@ export const getGameById = makeValidatedEndpoint(
     const { gameId } = req.params
 
     const game = await db.orm.public.Game.where({ id: gameId })
-      .select("id", "startedAt", "finishedAt", "elapsedMs")
+      .select("id", "startedAt", "finishedAt", "elapsedMs", "playerName")
       .include("foundCharacters", (character) =>
         character
           .select("characterId")
@@ -87,6 +90,35 @@ export const getGameById = makeValidatedEndpoint(
           }
         : game.level,
     })
+  }
+)
+
+export const setPlayerName = makeValidatedEndpoint(
+  {
+    params: z.object({
+      gameId: z.uuid(),
+    }),
+    body: GameSetPlayerNameBodySchema,
+  },
+  async (req, res: Response<GameSetPlayerNameReturn>) => {
+    const { gameId } = req.params
+    const { playerName } = req.body
+
+    const game = await db.orm.public.Game.where({ id: gameId }).first()
+
+    if (!game) {
+      throw createHttpError(404, "Game not found")
+    }
+
+    if (!game.finishedAt) {
+      throw createHttpError(409, "Game isn't finished yet")
+    }
+
+    const updatedGame = await db.orm.public.Game.where({ id: gameId }).update({
+      playerName,
+    })
+
+    res.json(GameSetPlayerNameReturnSchema.parse(updatedGame))
   }
 )
 

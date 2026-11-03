@@ -40,9 +40,28 @@ export const GameSchema = z.object({
     })
   ),
   level: LevelSchema.nullable(),
+  playerName: z.string().nullable(),
 })
 
 export type Game = z.infer<typeof GameSchema>
+
+// GET /:gameId
+export const GameSetPlayerNameBodySchema = z.object({
+  playerName: z.string().trim().nonempty("Player name is required."),
+})
+export type GameSetPlayerNameBody = z.infer<typeof GameSetPlayerNameBodySchema>
+
+export const GameSetPlayerNameReturnSchema = z.object({
+  id: z.uuid(),
+  startedAt: z.string(),
+  finishedAt: z.string(),
+  elapsedMs: NumericalIntPositiveSchema,
+  levelId: NumericalIntPositiveSchema,
+  playerName: z.string().nonempty(),
+})
+export type GameSetPlayerNameReturn = z.infer<
+  typeof GameSetPlayerNameReturnSchema
+>
 
 // POST /:gameId/find
 export const GameFindBodySchema = z.object({

@@ -1,8 +1,10 @@
 import {
   GameFindReturnSchema,
   GameSchema,
+  GameSetPlayerNameReturnSchema,
   StartGameReturnSchema,
   type GameFindBody,
+  type GameSetPlayerNameBody,
   type StartGameBody,
 } from "@workspace/shared"
 
@@ -20,6 +22,21 @@ export const startGame = async (body: StartGameBody) => {
 export const getGame = async (gameId: string) => {
   const res = await fetch(apiUrl(`/games/${gameId}`))
   return parseJson(res, GameSchema)
+}
+
+export const setPlayerName = async ({
+  gameId,
+  body,
+}: {
+  gameId: string
+  body: GameSetPlayerNameBody
+}) => {
+  const res = await fetch(apiUrl(`/games/${gameId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  return parseJson(res, GameSetPlayerNameReturnSchema)
 }
 
 export const findCharacter = async ({

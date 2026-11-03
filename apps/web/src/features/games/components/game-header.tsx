@@ -4,10 +4,11 @@ import CharacterIcons from "@/components/character-icons"
 import Timer from "@/components/timer"
 
 interface GameHeaderProps {
-  levelNumber?: number
-  startedAt: string
+  levelNumber: NonNullable<Game["level"]>["number"]
+  startedAt: Game["startedAt"]
   characters: NonNullable<Game["level"]>["targets"]
   foundCharacters: Game["foundCharacters"]
+  elapsedMs?: Game["elapsedMs"]
 }
 
 export default function GameHeader({
@@ -15,11 +16,12 @@ export default function GameHeader({
   startedAt,
   characters,
   foundCharacters,
+  elapsedMs,
 }: GameHeaderProps) {
   return (
     <div className="grid w-full max-w-5xl grid-cols-[1fr_auto_1fr] items-center">
       <h1 className="text-xl font-bold">Level {levelNumber}</h1>
-      <Timer startedAt={startedAt} />
+      <Timer startedAt={startedAt} elapsedMs={elapsedMs} />
       <div className="justify-self-end">
         <CharacterIcons
           characters={characters}
