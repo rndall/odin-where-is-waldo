@@ -2,10 +2,9 @@ import { afterAll, beforeEach, describe, expect, test } from "@jest/globals"
 
 import request from "supertest"
 
-import { db } from "@workspace/db"
+import { db, resetDb } from "@workspace/db"
 import { app } from "../app"
 import { createLevel } from "../utils/levels"
-import { resetDb } from "../utils/tests"
 
 describe("Level", () => {
   beforeEach(async () => {
@@ -38,8 +37,8 @@ describe("Level", () => {
           number: 1,
           imagePath: "/images/levels/level1-scene.webp",
           targets: [
-            { id: 1, name: "odlaw", imagePath: "/images/icons/odlaw.png" },
-            { id: 2, name: "waldo", imagePath: "/images/icons/waldo.png" },
+            { id: 1, name: "waldo", imagePath: "/images/icons/waldo.png" },
+            { id: 2, name: "odlaw", imagePath: "/images/icons/odlaw.png" },
             { id: 3, name: "wizard", imagePath: "/images/icons/wizard.webp" },
           ],
         },

@@ -2,11 +2,10 @@ import { afterAll, beforeEach, describe, expect, test } from "@jest/globals"
 
 import request from "supertest"
 
-import { db } from "@workspace/db"
+import { db, resetDb } from "@workspace/db"
 import { StartGameReturnSchema } from "@workspace/shared"
 import { app } from "../app"
 import { createLevel } from "../utils/levels"
-import { resetDb } from "../utils/tests"
 
 describe("Game", () => {
   beforeEach(async () => {
@@ -48,13 +47,13 @@ describe("Game", () => {
           targets: [
             {
               id: 1,
-              imagePath: "/images/icons/odlaw.png",
-              name: "odlaw",
+              imagePath: "/images/icons/waldo.png",
+              name: "waldo",
             },
             {
               id: 2,
-              imagePath: "/images/icons/waldo.png",
-              name: "waldo",
+              imagePath: "/images/icons/odlaw.png",
+              name: "odlaw",
             },
             {
               id: 3,
@@ -181,7 +180,7 @@ describe("Game", () => {
       const level = await createLevel()
       const { gameId } = await startGame(level.number)
 
-      const characterId = 2
+      const characterId = 1
 
       const res = await request(app)
         .post(`/api/games/${gameId}/find`)
@@ -210,7 +209,7 @@ describe("Game", () => {
 
       const res = await request(app)
         .post(`/api/games/${gameId}/find`)
-        .send({ characterId: 1, x: 53.02, y: 50.39 })
+        .send({ characterId: 2, x: 53.02, y: 50.39 })
         .set("Accept", "application/json")
 
       expect(res.headers["content-type"]).toMatch(/json/)
@@ -257,7 +256,7 @@ describe("Game", () => {
       // Target is at x 53.02, allowance is 4, so 57.02 is exactly at the edge
       const res = await request(app)
         .post(`/api/games/${gameId}/find`)
-        .send({ characterId: 2, x: 57.02, y: 50.39 })
+        .send({ characterId: 1, x: 57.02, y: 50.39 })
         .set("Accept", "application/json")
 
       expect(res.headers["content-type"]).toMatch(/json/)
@@ -276,7 +275,7 @@ describe("Game", () => {
       // |57.03 - 53.02| = 4.01 exceeds the allowance of 4
       const res = await request(app)
         .post(`/api/games/${gameId}/find`)
-        .send({ characterId: 2, x: 57.03, y: 50.39 })
+        .send({ characterId: 1, x: 57.03, y: 50.39 })
         .set("Accept", "application/json")
 
       expect(res.headers["content-type"]).toMatch(/json/)
@@ -294,7 +293,7 @@ describe("Game", () => {
 
       const res = await request(app)
         .post(`/api/games/${gameId}/find`)
-        .send({ characterId: 2, x: 53.02, y: 54.4 })
+        .send({ characterId: 1, x: 53.02, y: 54.4 })
         .set("Accept", "application/json")
 
       expect(res.headers["content-type"]).toMatch(/json/)
@@ -313,7 +312,7 @@ describe("Game", () => {
       const postReq = () =>
         request(app)
           .post(`/api/games/${gameId}/find`)
-          .send({ characterId: 2, x: 53.02, y: 50.39 })
+          .send({ characterId: 1, x: 53.02, y: 50.39 })
           .set("Accept", "application/json")
 
       const res1 = await postReq()
