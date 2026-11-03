@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
-import CharacterIcons from "@/components/character-icons"
 import DropdownMenuImage from "@/components/dropdown-menu-image"
+import GameHeader from "@/features/games/components/game-header"
 import { gameQueries } from "@/features/games/queries"
 
 export const Route = createFileRoute("/games/$gameId")({
@@ -26,11 +26,11 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col items-center">
-      <CharacterIcons
+      <GameHeader
+        levelNumber={data.level?.number}
+        startedAt={data.startedAt}
         characters={characters}
-        foundCharacters={data.foundCharacters.map(
-          ({ characterId }) => characterId
-        )}
+        foundCharacters={data.foundCharacters}
       />
       <DropdownMenuImage
         imgProps={{
