@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router"
+
 import { useStartGameMutation } from "@/features/games/hooks/useStartGameMutation"
 
 export function useStartGame() {

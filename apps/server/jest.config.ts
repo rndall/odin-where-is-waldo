@@ -7,6 +7,4 @@ const presetConfig = createDefaultEsmPreset({
 
 export default {
   ...presetConfig,
-  // Tests share one database, so they must not run concurrently.
-  maxWorkers: 1,
 } as Config
