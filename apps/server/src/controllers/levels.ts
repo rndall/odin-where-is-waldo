@@ -58,7 +58,7 @@ export const getLevelLeaderboard = makeValidatedEndpoint(
           g.playerName.isNotNull()
         )
       )
-      .orderBy((g) => g.elapsedMs.asc())
+      .orderBy([(g) => g.elapsedMs.asc(), (g) => g.finishedAt.asc()])
       .select("playerName", "elapsedMs", "finishedAt")
       .limit(10)
       .all()
