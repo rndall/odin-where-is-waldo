@@ -27,6 +27,29 @@ describe("Game", () => {
     return StartGameReturnSchema.parse(res.body)
   }
 
+  const finishGame = async (gameId: string, levelId: number) => {
+    const level = await db.orm.public.Level.where({ id: levelId })
+      .include("targets")
+      .firstOrThrow()
+
+    let lastRes: request.Response | undefined
+
+    for (const target of level.targets) {
+      lastRes = await request(app)
+        .post(`/api/games/${gameId}/find`)
+        .send({
+          characterId: target.characterId,
+          x: target.x,
+          y: target.y,
+        })
+        .set("Accept", "application/json")
+
+      expect(lastRes.status).toBe(200)
+    }
+
+    return lastRes
+  }
+
   describe("get by id route", () => {
     test("returns the correct game", async () => {
       const level = await createLevel()
@@ -182,25 +205,6 @@ describe("Game", () => {
         .patch(`/api/games/${gameId}`)
         .send({ playerName })
         .set("Accept", "application/json")
-
-    const finishGame = async (gameId: string, levelId: number) => {
-      const level = await db.orm.public.Level.where({ id: levelId })
-        .include("targets")
-        .firstOrThrow()
-
-      for (const target of level.targets) {
-        const res = await request(app)
-          .post(`/api/games/${gameId}/find`)
-          .send({
-            characterId: target.characterId,
-            x: target.x,
-            y: target.y,
-          })
-          .set("Accept", "application/json")
-
-        expect(res.status).toBe(200)
-      }
-    }
 
     test("returns updated game on success", async () => {
       const level = await createLevel()
@@ -520,6 +524,238 @@ describe("Game", () => {
         message: "All characters have been found already",
         found: false,
         finished: true,
+      })
+    })
+  })
+
+  describe("leaderboard qualification", () => {
+    const seedFinishedGame = async ({
+      levelNumber,
+      elapsedMs,
+      playerName = "Player",
+      finishedAt = new Date().toISOString(),
+    }: {
+      levelNumber: number
+      elapsedMs: number
+      playerName?: string | null
+      finishedAt?: string | null
+    }) => {
+      const { gameId } = await startGame(levelNumber)
+
+      await db.orm.public.Game.where({ id: gameId }).update({
+        elapsedMs,
+        ...(playerName !== null ? { playerName } : {}),
+        ...(finishedAt !== null ? { finishedAt } : {}),
+      })
+
+      return gameId
+    }
+
+    const backdateGameStart = async (gameId: string) =>
+      db.orm.public.Game.where({ id: gameId }).update({
+        startedAt: new Date(Date.now() - 60_000).toISOString(),
+      })
+
+    test("qualifies when no games finished yet", async () => {
+      const level = await createLevel()
+      const { gameId } = await startGame(level.number)
+      await backdateGameStart(gameId)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) return
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: true,
+      })
+    })
+
+    test("qualifies when less than ten entries exist", async () => {
+      const level = await createLevel()
+
+      // Entries are all faster than the tested game will be
+      for (const elapsedMs of [1, 2, 3, 4])
+        await seedFinishedGame({ levelNumber: level.number, elapsedMs })
+
+      const { gameId } = await startGame(level.number)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) return
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: true,
+      })
+    })
+
+    test("qualifies when faster than the tenth entry", async () => {
+      const level = await createLevel()
+
+      for (const index of Array.from({ length: 10 }, (_, index) => index))
+        await seedFinishedGame({
+          levelNumber: level.number,
+          elapsedMs: 1_000_000 + index * 1_000,
+        })
+
+      const { gameId } = await startGame(level.number)
+      await backdateGameStart(gameId)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) return
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: true,
+      })
+    })
+
+    test("doesn't qualify when slower than the tenth entry", async () => {
+      const level = await createLevel()
+
+      for (const elapsedMs of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        await seedFinishedGame({ levelNumber: level.number, elapsedMs })
+
+      const { gameId } = await startGame(level.number)
+      await backdateGameStart(gameId)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) {
+        throw new Error("Expected level to have at least one target")
+      }
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: false,
+      })
+    })
+
+    test("doesn't qualify when tied with the tenth entry time", async () => {
+      const level = await createLevel()
+
+      for (const elapsedMs of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        await seedFinishedGame({ levelNumber: level.number, elapsedMs })
+
+      const { gameId } = await startGame(level.number)
+      await finishGame(gameId, level.id)
+
+      // Board's tenth entry elapsed is 10
+      await db.orm.public.Game.where({ id: gameId }).update({ elapsedMs: 10 })
+
+      const res = await request(app).get(`/api/games/${gameId}`)
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(200)
+      expect(res.body).toMatchObject({
+        finishedAt: expect.any(String),
+        qualifiesForLeaderboard: false,
+      })
+    })
+
+    test("get route returns qualifiesForLeaderboard true when faster than the tenth entry", async () => {
+      const level = await createLevel()
+
+      for (const index of Array.from({ length: 10 }, (_, index) => index))
+        await seedFinishedGame({
+          levelNumber: level.number,
+          elapsedMs: 1_000_000 + index * 1_000,
+        })
+
+      const { gameId } = await startGame(level.number)
+      await finishGame(gameId, level.id)
+
+      const res = await request(app).get(`/api/games/${gameId}`)
+
+      expect(res.headers["content-type"]).toMatch(/json/)
+      expect(res.status).toBe(200)
+      expect(res.body).toMatchObject({
+        finishedAt: expect.any(String),
+        qualifiesForLeaderboard: true,
+      })
+    })
+
+    test("ignores finished games without a player name", async () => {
+      const level = await createLevel()
+
+      // Nine eligible entries and one unnamed
+      for (const elapsedMs of [1, 2, 3, 4, 5, 6, 7, 8, 9])
+        await seedFinishedGame({ levelNumber: level.number, elapsedMs })
+      await seedFinishedGame({
+        levelNumber: level.number,
+        elapsedMs: 0,
+        playerName: null,
+      })
+
+      const { gameId } = await startGame(level.number)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) return
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: true,
+      })
+    })
+
+    test("ignores unfinished games", async () => {
+      const level = await createLevel()
+
+      // Nine eligible entries and one unfinished
+      for (const elapsedMs of [1, 2, 3, 4, 5, 6, 7, 8, 9])
+        await seedFinishedGame({ levelNumber: level.number, elapsedMs })
+      await seedFinishedGame({
+        levelNumber: level.number,
+        elapsedMs: 0,
+        playerName: "Player",
+        finishedAt: null,
+      })
+
+      const { gameId } = await startGame(level.number)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) return
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: true,
+      })
+    })
+
+    test("only counts entries on the same level", async () => {
+      const level = await createLevel()
+
+      const otherLevel = await db.orm.public.Level.create({
+        number: 2,
+        imagePath: "/images/levels/level2-scene.webp",
+      })
+
+      for (const index of Array.from({ length: 10 }, (_, index) => index))
+        await seedFinishedGame({
+          levelNumber: otherLevel.number,
+          elapsedMs: index,
+        })
+
+      const { gameId } = await startGame(level.number)
+
+      const res = await finishGame(gameId, level.id)
+
+      if (!res) return
+
+      expect(res.body).toMatchObject({
+        found: true,
+        finished: true,
+        qualifiesForLeaderboard: true,
       })
     })
   })

@@ -19,6 +19,7 @@ interface LevelCompletedDialogProps extends ComponentProps<typeof Dialog> {
   onPlayAgain: () => void
   onSuccess: () => void
   elapsedMs: Game["elapsedMs"]
+  qualifiesForLeaderboard: Game["qualifiesForLeaderboard"]
 }
 
 export default function LevelCompletedDialog({
@@ -26,6 +27,7 @@ export default function LevelCompletedDialog({
   onPlayAgain,
   elapsedMs,
   onSuccess,
+  qualifiesForLeaderboard,
   ...props
 }: LevelCompletedDialogProps) {
   return (
@@ -40,7 +42,7 @@ export default function LevelCompletedDialog({
           )}
         </DialogHeader>
 
-        <PlayerNameForm onSuccess={onSuccess} />
+        {qualifiesForLeaderboard && <PlayerNameForm onSuccess={onSuccess} />}
         <DialogFooter>
           <Link to="/">
             <Button variant="link">Choose Another Level</Button>

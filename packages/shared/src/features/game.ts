@@ -41,6 +41,7 @@ export const GameSchema = z.object({
   ),
   level: LevelSchema.nullable(),
   playerName: z.string().nullable(),
+  qualifiesForLeaderboard: z.boolean().optional(),
 })
 
 export type Game = z.infer<typeof GameSchema>
@@ -75,5 +76,6 @@ export const GameFindReturnSchema = z.object({
   message: z.string(),
   found: z.boolean(),
   finished: z.boolean(),
+  qualifiesForLeaderboard: z.boolean().optional(),
 })
 export type GameFindReturn = z.infer<typeof GameFindReturnSchema>

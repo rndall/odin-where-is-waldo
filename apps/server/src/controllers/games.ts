@@ -15,7 +15,7 @@ import {
   type StartGameReturn,
 } from "@workspace/shared"
 import { makeValidatedEndpoint } from "../utils/endpoint"
-import { checkTarget } from "../utils/games"
+import { checkLeaderboardQualification, checkTarget } from "../utils/games"
 
 export const startGame = makeValidatedEndpoint(
   {
@@ -80,16 +80,27 @@ export const getGameById = makeValidatedEndpoint(
       return [{ characterId, x: target.x, y: target.y }]
     })
 
-    res.json({
+    if (!game.level) {
+      throw createHttpError(500, "Game not yet started on a level")
+    }
+
+    const resBody: Game = {
       ...game,
       foundCharacters,
-      level: game.level
-        ? {
-            ...game.level,
-            targets: game.level.targets.map(({ character }) => character),
-          }
-        : game.level,
-    })
+      level: {
+        ...game.level,
+        targets: game.level.targets.map(({ character }) => character),
+      },
+    }
+
+    if (game.elapsedMs) {
+      resBody.qualifiesForLeaderboard = await checkLeaderboardQualification({
+        levelId: game.level.id,
+        elapsedMs: game.elapsedMs,
+      })
+    }
+
+    res.json(resBody)
   }
 )
 
@@ -207,6 +218,8 @@ export const findCharacter = makeValidatedEndpoint(
         foundCharacterIds.has(characterId)
       )
 
+      let qualifiesForLeaderboard = false
+
       if (hasFoundAllChars) {
         const finishedAt = new Date()
 
@@ -219,13 +232,24 @@ export const findCharacter = makeValidatedEndpoint(
           finishedAt: finishedAt.toISOString(),
           elapsedMs,
         })
+
+        qualifiesForLeaderboard = await checkLeaderboardQualification({
+          levelId: game.level.id,
+          elapsedMs,
+        })
       }
 
-      return {
+      const resBody: GameFindReturn = {
         message: `You found ${titleCase(target.character.name)}`,
         found: true,
         finished: hasFoundAllChars,
       }
+
+      if (hasFoundAllChars) {
+        resBody.qualifiesForLeaderboard = qualifiesForLeaderboard
+      }
+
+      return resBody
     })
 
     res.json(result)

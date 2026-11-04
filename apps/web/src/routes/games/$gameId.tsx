@@ -77,7 +77,7 @@ function RouteComponent() {
           </div>
           {data.finishedAt && (
             <div className="absolute inset-0 flex items-center justify-center gap-4">
-              {!data.playerName && (
+              {!data.playerName && data.qualifiesForLeaderboard && (
                 <Button size="lg" onClick={() => setOpen(true)}>
                   Save Time
                 </Button>
@@ -96,6 +96,7 @@ function RouteComponent() {
         </div>
         <LevelCompletedDialog
           elapsedMs={data.elapsedMs}
+          qualifiesForLeaderboard={data.qualifiesForLeaderboard}
           levelNumber={data.level.number}
           open={open}
           onOpenChange={setOpen}
