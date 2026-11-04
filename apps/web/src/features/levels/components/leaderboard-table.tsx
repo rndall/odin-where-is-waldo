@@ -1,3 +1,12 @@
+import { Trophy } from "lucide-react"
+
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
 import {
   Table,
   TableBody,
@@ -16,6 +25,10 @@ interface LeaderboardTableProps {
 export default function LeaderboardTable({
   leaderboardEntries,
 }: LeaderboardTableProps) {
+  if (!leaderboardEntries.length) {
+    return <EmptyLeaderboard />
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -39,5 +52,21 @@ export default function LeaderboardTable({
         ))}
       </TableBody>
     </Table>
+  )
+}
+
+function EmptyLeaderboard() {
+  return (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Trophy />
+        </EmptyMedia>
+        <EmptyTitle>No times yet</EmptyTitle>
+        <EmptyDescription>
+          Be the first to finish a level and claim rank 1.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
   )
 }
