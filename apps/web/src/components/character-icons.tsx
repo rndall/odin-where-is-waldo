@@ -10,7 +10,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { Level } from "@workspace/shared"
 
 interface CharacterIconProps {
-  characters: Level["characters"]
+  characters: Level["targets"]
   foundCharacters: number[]
 }
 export default function CharacterIcons({
