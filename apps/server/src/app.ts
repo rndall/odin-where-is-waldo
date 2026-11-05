@@ -23,8 +23,11 @@ app.use(compression())
 app.use(express.json())
 
 app.use(
-  "/images",
-  express.static(join(import.meta.dirname, "../public/images"))
+  express.static(join(import.meta.dirname, "../public"), {
+    setHeaders: (res) => {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
+    },
+  })
 )
 
 const apiRouter = Router()
