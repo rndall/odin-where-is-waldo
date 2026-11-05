@@ -1,3 +1,5 @@
+import compression from "compression"
+import cors from "cors"
 import express, {
   type Express,
   type NextFunction,
@@ -5,6 +7,7 @@ import express, {
   type Response,
   Router,
 } from "express"
+import helmet from "helmet"
 import createError from "http-errors"
 import { join } from "node:path"
 
@@ -12,6 +15,10 @@ import { gamesRouter } from "./routes/games"
 import { levelsRouter } from "./routes/levels"
 
 const app: Express = express()
+
+app.use(helmet())
+app.use(cors())
+app.use(compression())
 
 app.use(express.json())
 
